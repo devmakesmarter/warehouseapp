@@ -54,7 +54,7 @@ export default function AddProduct() {
     }
 
     function addNewProduct(){
-        axios.post("/api/product",
+        axios.post("/api/warehouse/product",
             newProduct)
         .then(response => {console.log(response.data);})
     }

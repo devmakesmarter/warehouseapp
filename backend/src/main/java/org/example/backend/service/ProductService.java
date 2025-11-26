@@ -71,7 +71,7 @@ public class ProductService {
         return productRepo.save(newProduct);
     }
 
-    public void delete(String id) {
+    public void deleteProduct(String id) {
         productRepo.deleteById(id);
     }
 

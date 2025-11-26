@@ -19,16 +19,18 @@ public class ProductController {
     @GetMapping
     public List<Product> getAllProducts() {
         return  productService.getAllProducts();
-
     }
-
     @GetMapping("/{id}")
-    public Product getByPoductyId(@PathVariable String id) {
+    public Product getPoductyById(@PathVariable String id) {
         return productService.getProductById(id);
     }
 
     @PutMapping("/{id}")
     public Product updateProduct(@PathVariable String id, @RequestBody Product product) {
         return  productService.updateProduct(id, product);
+    }
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable String id) {
+        productService.deleteProduct(id);
     }
 }

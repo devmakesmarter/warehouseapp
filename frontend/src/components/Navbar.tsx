@@ -1,12 +1,14 @@
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
     return (
-        <nav>
-            <ul>
-                <li><Link to={"/"}>Lagerhäuser</Link></li>
-                <li><Link to={"/product"}>Produkte</Link></li>
-                <li><Link to={"/productdetails/:id"}>Produkt</Link></li>
+        <nav className="bg-gray-800 text-white p-4">
+            <ul className="flex gap-6">
+                <li>
+                    <Link to="/" className="hover:underline">
+                        Lagerhäuser
+                    </Link>
+                </li>
             </ul>
         </nav>
     );

@@ -1,68 +1,161 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+    color-scheme: light dark;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    /* Dark Mode Default */
+    color: rgba(255, 255, 255, 0.92);
+    background-color: #1f1f1f;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
+
+/* -------------------------------- */
+/* LINKS */
+/* -------------------------------- */
 
 a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+    font-weight: 500;
+    color: #4f8cff;
+    text-decoration: none;
+    transition: color 0.2s ease;
 }
+
 a:hover {
-  color: #535bf2;
+    color: #82aaff;
 }
+
+/* -------------------------------- */
+/* BODY */
+/* -------------------------------- */
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    display: block; /* WICHTIG: verhindert erzwungene Zentrierung */
 }
+
+/* -------------------------------- */
+/* HEADLINES */
+/* -------------------------------- */
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+    font-size: 2.4rem;
+    line-height: 1.2;
+    margin-bottom: 1rem;
 }
+
+/* -------------------------------- */
+/* BUTTONS */
+/* -------------------------------- */
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+    border-radius: 6px;
+    border: 1px solid #333;
+    padding: 0.6em 1.2em;
+    font-size: 1rem;
+    font-weight: 500;
+    background-color: #2a2a2a;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
+button:hover {
+    background-color: #3a3a3a;
+    border-color: #4f8cff;
+}
+
+button:focus,
+button:focus-visible {
+    outline: 3px solid #4f8cff;
+}
+
+/* -------------------------------- */
+/* TABLE DEFAULTS (Dark/Light auto) */
+/* -------------------------------- */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--table-bg, #ffffff);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: var(--table-head-bg, #f0f0f0);
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: left;
+}
+
+tbody tr {
+    border-bottom: 1px solid var(--table-row-border, #e5e5e5);
+    transition: background 0.2s ease;
+}
+
+tbody tr:hover {
+    background-color: var(--table-row-hover, #f9f9f9);
+}
+
+/* -------------------------------- */
+/* LIGHT MODE */
+/* -------------------------------- */
+
 @media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+    :root {
+        color: #222;
+        background-color: #f5f5f5;
+    }
+
+    /* Links */
+    a {
+        color: #2d6cdf;
+    }
+
+    a:hover {
+        color: #4d83ff;
+    }
+
+    /* Buttons */
+    button {
+        background-color: #ffffff;
+        border-color: #ddd;
+        color: #222;
+    }
+
+    button:hover {
+        background-color: #f0f0f0;
+        border-color: #4d83ff;
+    }
+
+    /* TABLE Light Mode */
+    :root {
+        --table-bg: #ffffff;
+        --table-head-bg: #f0f0f0;
+        --table-row-border: #e5e5e5;
+        --table-row-hover: #f9f9f9;
+    }
+}
+
+/* -------------------------------- */
+/* DARK MODE */
+/* -------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --table-bg: #2a2a2a;
+        --table-head-bg: #333333;
+        --table-row-border: #3d3d3d;
+        --table-row-hover: #383838;
+    }
 }

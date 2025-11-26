@@ -1,24 +1,26 @@
-import {Route, Routes} from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout.tsx";
 import WarehousePage from "./pages/WarehousePage.tsx";
-import PoductPage from "./pages/ProductPage.tsx";
+import WarehouseProductsPage from "./pages/WarehouseProductsPage.tsx";
 import ProductDetailPage from "./pages/ProductDetailPage.tsx";
 
-import './App.css'
+import './App.css';
 
 function App() {
+    return (
+        <Layout>
+            <Routes>
+                {/* Liste aller Lagerhäuser */}
+                <Route path="/" element={<WarehousePage />} />
 
-  return (
-      <>
-          <Layout>
-              <Routes>
-                  <Route path="/" element={<WarehousePage/>}/>
-                  <Route path="/product" element={<PoductPage/>}/>
-                  <Route path="/productdetails/:id" element={<ProductDetailPage/>}/>
-               </Routes>
-           </Layout>
-      </>
-  )
+                {/* Produkte eines bestimmten Lagerhauses */}
+                <Route path="/warehouse/:warehouseId/products" element={<WarehouseProductsPage />} />
+
+                {/* Produktdetails */}
+                <Route path="/productdetails/:id" element={<ProductDetailPage />} />
+            </Routes>
+        </Layout>
+    );
 }
 
-export default App
+export default App;

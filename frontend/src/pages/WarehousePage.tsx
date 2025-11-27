@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
+import EditableTable, { type Column } from "../components/EditableTable";
+import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
 
+// Datentyp für ein Lagerhaus
 export type Warehouse = {
     id: string;
     name: string;
@@ -12,95 +15,120 @@ export type Warehouse = {
 };
 
 export default function WarehousePage() {
-    // Liste aller Lagerhäuser vom Backend
+
+    // Liste aller Lagerhäuser
     const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
-    // zeigt, ob die Daten noch geladen werden
+
+    // ID der Zeile, die aktuell im Editiermodus ist
+    const [editingId, setEditingId] = useState<string | null>(null);
+
+    // Lade-Indikator
     const [loading, setLoading] = useState(true);
 
-    // lädt Daten vom Backend
+    // Lädt Lagerhäuser beim Seitenaufruf
     useEffect(() => {
-        axios.get("/api/warehouse")
-            .then(res => {
-                setWarehouses(res.data);   // speichert Daten im State
-                setLoading(false);         // lädt nicht mehr
-            })
-            .catch(() => setLoading(false)); // Fehler → trotzdem fertig
+        axios.get("/api/warehouse").then(res => {
+            setWarehouses(res.data);
+            setLoading(false);
+        });
     }, []);
 
-    // Anzeige während die Daten geladen werden
-    if (loading) return <p className="p-4">Lade Lagerhäuser…</p>;
+    // Tabellen-Spalten – hier wird definiert, welche Felder editierbar sind
+    const columns: Column<Warehouse>[] = [
+        {
+            key: "name",
+            label: "Name",
+            editable: true,
+            // Wenn NICHT im Editiermodus: Feld wird als Link angezeigt
+            render: (value, row) => (
+                <Link
+                    to={`/warehouse/${row.id}/products`}
+                    className="text-blue-600 underline"
+                >
+                    {value}
+                </Link>
+            )
+        },
+        { key: "city", label: "Stadt", editable: true },
+        { key: "street", label: "Straße", editable: true },
+        { key: "houseNumber", label: "Nr.", editable: true },
+        { key: "zipCode", label: "PLZ", editable: true },
+    ];
+
+    // Speichern einer Zeile (neu oder existierend)
+    const handleSave = async (row: Warehouse) => {
+        // Neue Zeile
+        if (row.id.startsWith("new-")) {
+            const res = await axios.post("/api/warehouse", row);
+            return res.data;
+        }
+
+        // Bestehende Zeile aktualisieren
+        const res = await axios.put(`/api/warehouse/${row.id}`, row);
+        return res.data;
+    };
+
+    // Zeile endgültig löschen
+    const handleDelete = async (id: string) => {
+        await axios.delete(`/api/warehouse/${id}`);
+    };
+
+    // ➕ Neue Zeile anlegen
+    const handleAdd = () => {
+        const id = "new-" + Math.random();
+
+        // Neue leere Zeile oben einfügen
+        setWarehouses(prev => [
+            {
+                id,
+                name: "",
+                city: "",
+                street: "",
+                houseNumber: "",
+                zipCode: ""
+            },
+            ...prev
+        ]);
+
+        // Neue Zeile sofort in den Editiermodus setzen
+        setEditingId(id);
+    };
+
+    // Ladeindikator
+    if (loading) return <p className="p-4">Lade Lagerhäuser …</p>;
 
     return (
-        <div className="flex justify-center w-full mt-10">
-            <div className="w-full max-w-5xl">
-                <h1 className="text-2xl font-bold mb-6 text-center">Lagerhäuser</h1>
+        <div className="max-w-5xl mx-auto mt-10">
 
-                <table className="min-w-full bg-white shadow rounded-lg overflow-hidden">
-                    <thead className="bg-gray-100 border-b">
-                    <tr>
-                        <th className="text-left p-4 font-semibold">Name</th>
-                        <th className="text-left p-4 font-semibold">Stadt</th>
-                        <th className="text-left p-4 font-semibold">Straße</th>
-                        <th className="text-left p-4 font-semibold">Nr.</th>
-                        <th className="text-left p-4 font-semibold">PLZ</th>
-                    </tr>
-                    </thead>
+            {/* Titel + Hinzufügen-Button */}
+            <div className="flex justify-between mb-6">
+                <h1 className="text-2xl font-bold">Lagerhäuser</h1>
 
-                    <tbody>
-                    {warehouses.map((wh) => (
-                        <tr
-                            key={wh.id}
-                            className="border-b hover:bg-gray-50 transition"
-                        >
-                            <td className="p-4 pr-14">
-                                <Link
-                                    to={`/warehouse/${wh.id}/products`}
-                                    className="text-blue-600 underline hover:no-underline"
-                                >
-                                    {wh.name}
-                                </Link>
-                            </td>
-
-                            <td className="p-4">
-                                <Link
-                                    to={`/warehouse/${wh.id}/products`}
-                                    className="text-blue-600 underline hover:no-underline"
-                                >
-                                    {wh.city}
-                                </Link>
-                            </td>
-
-                            <td className="p-4">
-                                <Link
-                                    to={`/warehouse/${wh.id}/products`}
-                                    className="text-blue-600 underline hover:no-underline"
-                                >
-                                    {wh.street}
-                                </Link>
-                            </td>
-
-                            <td className="p-4">
-                                <Link
-                                    to={`/warehouse/${wh.id}/products`}
-                                    className="text-blue-600 underline hover:no-underline"
-                                >
-                                    {wh.houseNumber}
-                                </Link>
-                            </td>
-
-                            <td className="p-4">
-                                <Link
-                                    to={`/warehouse/${wh.id}/products`}
-                                    className="text-blue-600 underline hover:no-underline"
-                                >
-                                    {wh.zipCode}
-                                </Link>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+                <button
+                    onClick={handleAdd}
+                    // Button wird ausgegraut, wenn bereits eine neue Zeile existiert
+                    disabled={warehouses.some(w => w.id.startsWith("new-"))}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl 
+                        ${warehouses.some(w => w.id.startsWith("new-"))
+                        ? "bg-gray-400 text-white cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700"
+                    }`}
+                >
+                    <Plus size={18} />
+                    Lagerhaus
+                </button>
             </div>
+
+            {/* Wiederverwendbares Tabellen-Template */}
+            <EditableTable
+                columns={columns}
+                data={warehouses}
+                setData={setWarehouses}
+                onSave={handleSave}
+                onDelete={handleDelete}
+                editingId={editingId}
+                setEditingId={setEditingId}
+            />
         </div>
     );
 }

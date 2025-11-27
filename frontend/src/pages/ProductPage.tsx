@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
 import axios from "axios";
+import { useParams, Link } from "react-router-dom";
+import EditableTable, { type Column } from "../components/EditableTable";
+import { Plus } from "lucide-react";
 
+// Produkt-Datentyp
 export type Product = {
     id: string;
     name: string;
@@ -10,98 +13,143 @@ export type Product = {
     category: string;
 };
 
+// Lagerhaus-Datentyp
 export type Warehouse = {
     id: string;
     name: string;
 };
 
 export default function ProductPage() {
+
+    // Holt die warehouseId aus der URL (/warehouse/:warehouseId/products)
     const { warehouseId } = useParams();
+
+    // Produktliste
     const [products, setProducts] = useState<Product[]>([]);
+
+    // Info über das aktuelle Lagerhaus für die Überschrift
     const [warehouse, setWarehouse] = useState<Warehouse | null>(null);
+
+    // Welche Zeile gerade im Editiermodus ist
+    const [editingId, setEditingId] = useState<string | null>(null);
+
+    // Ladezustand
     const [loading, setLoading] = useState(true);
 
-    // Produkte laden
+    // Produkte aus API laden
     useEffect(() => {
-        axios
-            .get(`/api/product/warehouse/${warehouseId}`)
-            .then(res => {
-                setProducts(res.data);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
+        axios.get(`/api/product/warehouse/${warehouseId}`).then(res => {
+            setProducts(res.data);
+            setLoading(false);
+        });
     }, [warehouseId]);
 
-    // Lagerhaus-Namen laden
+    // Lagerhausdaten (Name, etc.) laden
     useEffect(() => {
-        axios
-            .get(`/api/warehouse/${warehouseId}`)
-            .then(res => setWarehouse(res.data))
-            .catch(() => setWarehouse(null));
+        axios.get(`/api/warehouse/${warehouseId}`).then(res => {
+            setWarehouse(res.data);
+        });
     }, [warehouseId]);
 
-    if (loading)
-        return (
-            <div className="flex justify-center items-center h-40">
-                <p className="text-lg">Lade Produkte…</p>
-            </div>
-        );
+    // Tabellenspalten definieren
+    const columns: Column<Product>[] = [
+        {
+            key: "name",
+            label: "Produktname",
+            editable: true,
+            // Wenn nicht im Editmodus → Link zu Produktdetails
+            render: (v, row) => (
+                <Link
+                    to={`/productdetails/${row.id}`}
+                    className="text-blue-600 underline"
+                >
+                    {v}
+                </Link>
+            )
+        },
+        { key: "quantity", label: "Menge", editable: true },
+        { key: "barcode", label: "Barcode", editable: true },
+        { key: "category", label: "Kategorie", editable: true },
+    ];
+
+    // Speichert neue oder bestehende Produkte
+    const handleSave = async (row: Product) => {
+
+        // Neues Produkt
+        if (row.id.startsWith("new-")) {
+            const res = await axios.post("/api/product", {
+                ...row,
+                warehouseId        // Produkt wird diesem Lagerhaus zugeordnet
+            });
+            return res.data;
+        }
+
+        // Bestehendes Produkt aktualisieren
+        const res = await axios.put(`/api/product/${row.id}`, row);
+        return res.data;
+    };
+
+    // Produkt endgültig löschen
+    const handleDelete = async (id: string) => {
+        await axios.delete(`/api/product/${id}`);
+    };
+
+    // Neue Produktzeile einfügen
+    const handleAdd = () => {
+        const id = "new-" + Math.random();
+
+        setProducts(prev => [
+            {
+                id,
+                name: "",
+                quantity: 0,
+                barcode: "",
+                category: ""
+            },
+            ...prev
+        ]);
+
+        // Neue Zeile sofort editieren
+        setEditingId(id);
+    };
+
+    // Ladeanzeige
+    if (loading) return <p className="p-4">Lade Produkte…</p>;
 
     return (
-        <div className="flex justify-center w-full mt-10 px-4">
-            <div className="w-full max-w-5xl">
+        <div className="max-w-5xl mx-auto mt-10">
 
-                <h1 className="text-xl font-bold mb-6 text-center">
+            {/* Titel + "Produkt hinzufügen" Button */}
+            <div className="flex justify-between mb-6">
+                <h1 className="text-xl font-bold">
                     Lagerhaus: {warehouse?.name}
                 </h1>
 
-                <div className="overflow-x-auto shadow-lg rounded-xl">
-                    <table className="min-w-full bg-white dark:bg-neutral-900 rounded-xl overflow-hidden">
-                        <thead className="bg-gray-100 dark:bg-neutral-800 border-b dark:border-neutral-700">
-                        <tr>
-                            <th className="text-left p-4 font-semibold">Produktname</th>
-                            <th className="text-left p-4 font-semibold">Menge</th>
-                            <th className="text-left p-4 font-semibold">Barcode</th>
-                            <th className="text-left p-4 font-semibold">Kategorie</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        {products.map((p) => (
-                            <tr
-                                key={p.id}
-                                className="border-b dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-800 transition"
-                            >
-                                <td className="p-4">
-                                    <Link to={`/productdetails/${p.id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
-                                        {p.name}
-                                    </Link>
-                                </td>
-
-                                <td className="p-4">
-                                    <Link to={`/productdetails/${p.id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
-                                        {p.quantity}
-                                    </Link>
-                                </td>
-
-                                <td className="p-4">
-                                    <Link to={`/productdetails/${p.id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
-                                        {p.barcode}
-                                    </Link>
-                                </td>
-
-                                <td className="p-4 capitalize">
-                                    <Link to={`/productdetails/${p.id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
-                                        {p.category.toLowerCase()}
-                                    </Link>
-                                </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-
+                <button
+                    onClick={handleAdd}
+                    // Button deaktivieren, wenn bereits ein neues Produkt erstellt wird
+                    disabled={products.some(p => p.id.startsWith("new-"))}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl 
+        ${products.some(p => p.id.startsWith("new-"))
+                        ? "bg-gray-400 text-white cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700"
+                    }`}
+                >
+                    <Plus size={18} />
+                    Produkt
+                </button>
             </div>
+
+            {/* Wiederverwendbare Tabellensablone */}
+            <EditableTable
+                columns={columns}
+                data={products}
+                setData={setProducts}
+                onSave={handleSave}
+                onDelete={handleDelete}
+                editingId={editingId}
+                setEditingId={setEditingId}
+            />
         </div>
     );
 }

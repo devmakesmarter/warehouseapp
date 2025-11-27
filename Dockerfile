@@ -1,1 +1,4 @@
-FROM openjdk:21
+FROM eclipse-temurin:21
+EXPOSE 8080
+ADD backend/target/warehouseapp.jar warehouseapp.jar
+ENTRYPOINT ["java","-jar","warehouseapp.jar"]

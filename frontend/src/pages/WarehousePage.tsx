@@ -75,7 +75,7 @@ export default function WarehousePage() {
 
     // Neue Zeile anlegen
     const handleAdd = () => {
-        const id = "new-" + Math.random();
+        const id = "new-" + crypto.randomUUID();
 
         // Neue leere Zeile oben einfügen
         setWarehouses(prev => [

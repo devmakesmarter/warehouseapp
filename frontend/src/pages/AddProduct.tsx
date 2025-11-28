@@ -72,28 +72,29 @@ export default function AddProduct() {
         <>
             <h1>Add a new Product</h1>
             <form onSubmit={handleSubmit}>
-                <label>Product Name:
-                    <input name={"Product Name"} onChange={(e) => setProductName(e.target.value)}
-                    placeholder={"Enter Product Name"} value={productName}
-                />
+                <label>Product Name:<input
+                    name={"Product Name"}
+                    onChange={(e) => setProductName(e.target.value)}
+                    placeholder={"Enter Product Name"}
+                    value={productName}/>
                 </label>
-                <label>Product Description:
-                <input name={"Product Description"}
+                <label>Product Description: <input
+                    name={"Product Description"}
                     onChange={(e) => setProductDescription(e.target.value)}
                     placeholder={"Enter Product Description"}
-                    value={productDescription}
-                />
+                    value={productDescription}/>
                 </label>
-                <label>Quantity:
-                <input name={"Quantity"}
+                <label>Quantity:<input
+                    name={"Quantity"}
                     onChange={(e) => setProductQuantity(e.target.value)}
                     placeholder={"Enter quantity"}
                     type="number"
                     value={productQuantity}
                 />
                 </label>
-                <label>Category:
-                    <select value={productCategory} onChange={handleChange}>
+                <label>Category:<select
+                    value={productCategory}
+                    onChange={handleChange}>
                         {categories.map((category) => (
                             <option value={category.value} key={category.value}>{category.label} </option>
                         ))}

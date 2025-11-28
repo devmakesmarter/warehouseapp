@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import './App.css'
+import ProductOverview from "./ProductOverview.tsx";
 
 function App() {
 
@@ -9,7 +10,7 @@ function App() {
     <>
 
       <h1>hallo</h1>
-
+        <ProductOverview />
     </>
   )
 }
